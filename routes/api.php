@@ -46,3 +46,4 @@ Route::middleware('auth:api')->get('/numnoti', 'Func\UserData@numberofNotif');
 Route::middleware('auth:api')->get('/history', 'Func\UserData@getHistory');
 
 
+//hello akhil it is just a test
