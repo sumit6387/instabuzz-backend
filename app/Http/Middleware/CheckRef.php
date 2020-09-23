@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\DB;
-
+use App\User;
 class CheckRef
 {
     /**
@@ -16,9 +16,9 @@ class CheckRef
      */
     public function handle($request, Closure $next)
     {
-        $users = DB::select('select ref_code,id from users where ref_code = ?', [$request->Refcode]);
-        if(count($users)>0){
-            $request->merge(['userexist'=>true, 'userid'=>$users[0]->id]);
+        $users = User::where('ref_code',$request->Refcode)->get()->first();
+        if($users){
+            $request->merge(['userexist'=>true, 'userid'=>$users->id]);
         }
         return $next($request);
     }

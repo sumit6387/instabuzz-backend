@@ -1,8 +1,8 @@
 <?php
 namespace App\Classes;
 
-use Illuminate\Support\Facades\DB;
 use App\User;
+use App\notification;
 
 class AllFunction{
     function random_strings($length_of_string) 
@@ -20,15 +20,16 @@ class AllFunction{
     public function addCoins($coins, $userid)
     {
         $user = new User();
-        $data = DB::table('users')->where('id', $userid)->increment('tot_coins', $coins);
+        $data = User::where('id', $userid)->increment('tot_coins', $coins);
         if($data == 1){
-            $users = DB::select('select * from users where id = ?', [$userid]);
-            if($users[0]->tot_coins>100 && $users[0]->reffral==0){
-                $affected = DB::table('users')->where('ref_code', $users[0]->ref_by)->increment('tot_coins', 50);
-                $affected = DB::update('update users set reffral = 1 where id = ?', [$userid]);
-                $results = DB::select('select * from users where ref_code = ?', [$users[0]->ref_by]);
-                if($affected){
-                    $this->sendNotification("50 coins of Reffering is added to your account", $results[0]->id);
+            $users = User::where('id', $userid)->get()->first();
+            if($users->tot_coins>100 && $users->reffral==0){
+                $affected = User::where('ref_code', $users->ref_by)->increment('tot_coins', 50);
+                $affected = User::where('id',$userid)->get()->first();
+                $affected->reffral = 1;
+                $results = User::where('ref_code',$users->ref_by)->get()->first();
+                if($affected->update()){
+                    $this->sendNotification("50 coins of Reffering is added to your account", $results->id);
                     return true;
                 }
             }else{
@@ -41,7 +42,10 @@ class AllFunction{
 
     public function sendNotification($msg, $uid)
     {
-      $getdta =  DB::insert('insert into notification (msg, u_id) values (?, ?)', [$msg, $uid]);
-        return $getdta;
+      $getdta = new notification();
+      $getdta->msg =  $msg;
+      $getdta->u_id =  $uid;
+      $getdta->save();
+      return 1;
     }
 }

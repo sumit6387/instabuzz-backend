@@ -23,8 +23,7 @@ class Order
         if (Str::startsWith($header, 'Bearer ')) {
             $token = Str::substr($header, 7);
         }
-        $usr = new User();
-        $dat = $usr->where('api_token', $token)->get(['id', 'tot_coins']);
+        $dat = User::where('api_token', $token)->get(['id', 'tot_coins']);
         if($dat[0]->tot_coins<$orcoins){
             return response()->json(["status"=>false, "msg"=>"Earn Some Coins"], 200);
         }

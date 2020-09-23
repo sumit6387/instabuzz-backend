@@ -52,7 +52,7 @@ class UserController extends Controller
             if (Hash::check($request->pass, $data->password)) {
                 return response()->json(["status"=>true,"token"=>$data->api_token], 200);
             }else{
-                return response()->json(["status"=>false,"err"=>"Invalide password"], 200);
+                return response()->json(["status"=>false,"err"=>"Invalid password"], 200);
             }
         }
         catch(Exception $e)
